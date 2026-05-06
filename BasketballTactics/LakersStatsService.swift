@@ -184,7 +184,7 @@ public final class MockLakersStatsService: LakersStatsService {
         let season = BalldontlieLakersStatsService.currentSeason()
         return LakersGameStats(
             date: Date().addingTimeInterval(-86_400),
-            opponent: "Los Angeles Clippers",
+            opponent: "Bay Area Tech",
             lakersScore: 112,
             opponentScore: 106,
             season: season

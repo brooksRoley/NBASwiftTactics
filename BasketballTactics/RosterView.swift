@@ -4,7 +4,7 @@ import Combine
 // MARK: - RosterView
 
 struct RosterView: View {
-    @StateObject private var viewModel = RosterViewModel(service: BalldontliePlayerStatsService())
+    @StateObject private var viewModel = RosterViewModel(service: MockPlayerStatsService())
 
     var body: some View {
         Group {

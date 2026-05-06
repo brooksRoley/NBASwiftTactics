@@ -16,6 +16,9 @@ struct ContentView: View {
 
             TacticsTab()
                 .tabItem { Label("Tactics", systemImage: "sportscourt.fill") }
+                
+            PuzzleListView()
+                .tabItem { Label("Puzzles", systemImage: "puzzlepiece.extension.fill") }
         }
     }
 }
@@ -23,7 +26,7 @@ struct ContentView: View {
 // MARK: - Stats Tab
 
 private struct StatsTab: View {
-    @StateObject private var viewModel = LakersStatsViewModel(service: BalldontlieLakersStatsService())
+    @StateObject private var viewModel = LakersStatsViewModel(service: MockLakersStatsService())
 
     var body: some View {
         NavigationStack {
@@ -74,7 +77,7 @@ private struct StatsTab: View {
                 // Roster stat cards
                 RosterView()
             }
-            .navigationTitle("Lakers")
+            .navigationTitle("L.A. Stars")
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button {

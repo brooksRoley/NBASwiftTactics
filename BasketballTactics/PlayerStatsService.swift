@@ -136,13 +136,13 @@ public final class MockPlayerStatsService: PlayerStatsService {
 
     public func fetchLakersSeasonAverages() async throws -> [PlayerSeasonStats] {
         [
-            PlayerSeasonStats(id: 2544,  playerName: "LeBron James",      position: "F",  pts: 25.7, reb: 7.3,  ast: 8.3, gamesPlayed: 71),
-            PlayerSeasonStats(id: 3202,  playerName: "Anthony Davis",     position: "C",  pts: 24.7, reb: 12.6, ast: 3.5, gamesPlayed: 76),
-            PlayerSeasonStats(id: 1629029,playerName: "Austin Reaves",   position: "G",  pts: 15.9, reb: 4.4,  ast: 5.5, gamesPlayed: 79),
-            PlayerSeasonStats(id: 1626156,playerName: "D'Angelo Russell", position: "G",  pts: 14.3, reb: 3.1,  ast: 6.0, gamesPlayed: 68),
-            PlayerSeasonStats(id: 1629060,playerName: "Rui Hachimura",    position: "F",  pts: 13.7, reb: 4.7,  ast: 1.4, gamesPlayed: 74),
-            PlayerSeasonStats(id: 1641705,playerName: "Max Christie",     position: "G",  pts: 10.2, reb: 3.3,  ast: 1.8, gamesPlayed: 62),
-            PlayerSeasonStats(id: 203076, playerName: "Gabe Vincent",     position: "G",  pts: 8.4,  reb: 2.1,  ast: 2.9, gamesPlayed: 58),
+            PlayerSeasonStats(id: 2544,  playerName: "Star Forward",      position: "F",  pts: 25.7, reb: 7.3,  ast: 8.3, gamesPlayed: 71),
+            PlayerSeasonStats(id: 3202,  playerName: "Dominant Center",     position: "C",  pts: 24.7, reb: 12.6, ast: 3.5, gamesPlayed: 76),
+            PlayerSeasonStats(id: 1629029,playerName: "Combo Guard",   position: "G",  pts: 15.9, reb: 4.4,  ast: 5.5, gamesPlayed: 79),
+            PlayerSeasonStats(id: 1626156,playerName: "Scoring Guard", position: "G",  pts: 14.3, reb: 3.1,  ast: 6.0, gamesPlayed: 68),
+            PlayerSeasonStats(id: 1629060,playerName: "Stretch Forward",    position: "F",  pts: 13.7, reb: 4.7,  ast: 1.4, gamesPlayed: 74),
+            PlayerSeasonStats(id: 1641705,playerName: "Two-Way Wing",     position: "G",  pts: 10.2, reb: 3.3,  ast: 1.8, gamesPlayed: 62),
+            PlayerSeasonStats(id: 203076, playerName: "Backup Guard",     position: "G",  pts: 8.4,  reb: 2.1,  ast: 2.9, gamesPlayed: 58),
         ]
     }
 }
