@@ -19,6 +19,9 @@ struct ContentView: View {
                 
             PuzzleListView()
                 .tabItem { Label("Puzzles", systemImage: "puzzlepiece.extension.fill") }
+                
+            ProfileView()
+                .tabItem { Label("Profile", systemImage: "person.crop.circle") }
         }
     }
 }
@@ -79,13 +82,23 @@ private struct StatsTab: View {
             }
             .navigationTitle("L.A. Stars")
             .toolbar {
-                ToolbarItem(placement: .automatic) {
+                #if os(iOS)
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         Task { await viewModel.reload() }
                     } label: {
                         Label("Reload", systemImage: "arrow.clockwise")
                     }
                 }
+                #else
+                ToolbarItem {
+                    Button {
+                        Task { await viewModel.reload() }
+                    } label: {
+                        Label("Reload", systemImage: "arrow.clockwise")
+                    }
+                }
+                #endif
             }
             .task { await viewModel.reload() }
         }
@@ -101,13 +114,23 @@ private struct TacticsTab: View {
                 .ignoresSafeArea(edges: .bottom)
                 .navigationTitle("Tactics Board")
                 .toolbar {
-                    ToolbarItem(placement: .automatic) {
+                    #if os(iOS)
+                    ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             NotificationCenter.default.post(name: .clearCourt, object: nil)
                         } label: {
                             Label("Clear", systemImage: "trash")
                         }
                     }
+                    #else
+                    ToolbarItem {
+                        Button {
+                            NotificationCenter.default.post(name: .clearCourt, object: nil)
+                        } label: {
+                            Label("Clear", systemImage: "trash")
+                        }
+                    }
+                    #endif
                 }
         }
     }

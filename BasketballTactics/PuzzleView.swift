@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct PuzzleListView: View {
     @StateObject private var puzzleManager = PuzzleManager()
@@ -6,17 +7,24 @@ struct PuzzleListView: View {
     var body: some View {
         NavigationStack {
             List(puzzleManager.puzzles) { puzzle in
-                NavigationLink(destination: PuzzleDetailView(puzzle: puzzle)) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(puzzle.title)
-                            .font(.headline)
-                        
-                        HStack {
-                            Text("Difficulty: \(puzzle.difficulty)/5")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                NavigationLink(destination: PuzzleDetailView(puzzleManager: puzzleManager, puzzle: puzzle)) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(puzzle.title)
+                                .font(.headline)
                             
-                            Spacer()
+                            HStack {
+                                Text("Difficulty: \(puzzle.difficulty)/5")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Spacer()
+                            }
+                        }
+                        Spacer()
+                        if puzzleManager.isCompleted(puzzle.id) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
                         }
                     }
                     .padding(.vertical, 4)
@@ -28,6 +36,7 @@ struct PuzzleListView: View {
 }
 
 struct PuzzleDetailView: View {
+    @ObservedObject var puzzleManager: PuzzleManager
     let puzzle: PuzzleScenario
     @State private var selectedStrategy: DefensiveStrategy?
     @State private var showResult = false
@@ -102,7 +111,7 @@ struct PuzzleDetailView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(UIColor.secondarySystemBackground))
+                        .background(.thinMaterial)
                         .cornerRadius(8)
                     }
                 }
@@ -118,6 +127,9 @@ struct PuzzleDetailView: View {
                         Button(action: {
                             selectedStrategy = strategy
                             showResult = true
+                            if strategy == puzzle.correctStrategy {
+                                puzzleManager.markCompleted(puzzle.id)
+                            }
                         }) {
                             HStack {
                                 Text(strategy.rawValue)
@@ -167,7 +179,9 @@ struct PuzzleDetailView: View {
             .padding()
         }
         .navigationTitle("Puzzle")
+#if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+#endif
     }
 }
 
@@ -179,9 +193,7 @@ struct MiniCourtView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                court(in: geo.size)
-                    .fill(Color.orange.opacity(0.15))
-                    .overlay(courtLines(in: geo.size).stroke(Color.brown, lineWidth: 2))
+                PremiumCourtBackground(isHalfCourt: true)
                 
                 ForEach(players) { player in
                     ZStack {
@@ -204,33 +216,6 @@ struct MiniCourtView: View {
         .cornerRadius(12)
     }
 
-    private func court(in size: CGSize) -> Path {
-        var path = Path()
-        path.addRect(CGRect(origin: .zero, size: size))
-        return path
-    }
-
-    private func courtLines(in size: CGSize) -> Path {
-        var path = Path()
-        let w = size.width
-        let h = size.height
-
-        path.addRect(CGRect(x: 0, y: 0, width: w, height: h))
-        path.move(to: CGPoint(x: 0, y: h/2))
-        path.addLine(to: CGPoint(x: w, y: h/2))
-
-        let arcCenter = CGPoint(x: w/2, y: h - h*0.2)
-        path.addArc(center: arcCenter, radius: min(w, h) * 0.35, startAngle: .degrees(200), endAngle: .degrees(-20), clockwise: true)
-
-        let ftCenter = CGPoint(x: w/2, y: h - h*0.35)
-        path.addEllipse(in: CGRect(x: ftCenter.x - 30, y: ftCenter.y - 30, width: 60, height: 60))
-
-        let keyWidth: CGFloat = min(w * 0.4, 120)
-        let keyHeight: CGFloat = h * 0.35
-        path.addRect(CGRect(x: (w - keyWidth)/2, y: h - keyHeight, width: keyWidth, height: keyHeight))
-
-        return path
-    }
 }
 
 #Preview {

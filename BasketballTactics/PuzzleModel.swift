@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 // MARK: - Puzzle Models
 
@@ -39,13 +40,38 @@ struct PuzzlePlayer: Codable, Identifiable {
 
 // MARK: - Puzzle Manager
 
+@MainActor
 class PuzzleManager: ObservableObject {
     @Published var puzzles: [PuzzleScenario] = []
-    
+    @Published var completedPuzzleIDs: Set<String> = []
+
     init() {
         loadMockPuzzles()
+        loadProgress()
     }
-    
+
+    func markCompleted(_ id: String) {
+        completedPuzzleIDs.insert(id)
+        saveProgress()
+    }
+
+    func isCompleted(_ id: String) -> Bool {
+        return completedPuzzleIDs.contains(id)
+    }
+
+    private func loadProgress() {
+        if let data = UserDefaults.standard.data(forKey: "completedPuzzles"),
+           let decoded = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            completedPuzzleIDs = decoded
+        }
+    }
+
+    private func saveProgress() {
+        if let encoded = try? JSONEncoder().encode(completedPuzzleIDs) {
+            UserDefaults.standard.set(encoded, forKey: "completedPuzzles")
+        }
+    }
+
     private func loadMockPuzzles() {
         self.puzzles = [
             PuzzleScenario(

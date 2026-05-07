@@ -1,7 +1,5 @@
 import SwiftUI
-#if canImport(Combine)
 import Combine
-#endif
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -52,39 +50,44 @@ struct BasketballCourtView: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                court(in: geo.size)
-                    .fill(Color.orange.opacity(0.15))
-                    .overlay(courtLines(in: geo.size).stroke(Color.brown, lineWidth: 2))
+            let courtSize = CGSize(width: geo.size.width, height: geo.size.width / 1.88)
+            VStack {
+                Spacer(minLength: 0)
+                ZStack {
+                    PremiumCourtBackground(isHalfCourt: false)
 
-                // Drawn paths
-                ForEach(Array(state.paths.enumerated()), id: \.offset) { _, pathPoints in
-                    Path { path in
-                        guard let first = pathPoints.first else { return }
-                        path.move(to: first)
-                        for p in pathPoints.dropFirst() { path.addLine(to: p) }
+                    // Drawn paths
+                    ForEach(Array(state.paths.enumerated()), id: \.offset) { _, pathPoints in
+                        Path { path in
+                            guard let first = pathPoints.first else { return }
+                            path.move(to: first)
+                            for p in pathPoints.dropFirst() { path.addLine(to: p) }
+                        }
+                        .stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
                     }
-                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                }
 
-                // Markers
-                ForEach(state.markers) { marker in
-                    markerView(marker)
-                        .position(marker.position)
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { value in
-                                    let clamped = clamp(value.location, in: geo.size)
-                                    state.updateMarker(marker, to: clamped)
-                                }
-                        )
+                    // Markers
+                    ForEach(state.markers) { marker in
+                        markerView(marker)
+                            .position(marker.position)
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        let clamped = clamp(value.location, in: courtSize)
+                                        state.updateMarker(marker, to: clamped)
+                                    }
+                            )
+                    }
                 }
+                .frame(width: geo.size.width, height: courtSize.height)
+                .background(Color.clear)
+                Spacer(minLength: 0)
             }
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 10)
                     .onChanged { value in
-                        let point = clamp(value.location, in: geo.size)
+                        let point = clamp(value.location, in: courtSize)
                         if !drawing {
                             drawing = true
                             state.startPath(at: point)
@@ -103,7 +106,7 @@ struct BasketballCourtView: View {
             )
             .background {
                 TouchCaptureView(onTap: { location in
-                    let clamped = clamp(location, in: geo.size)
+                    let clamped = clamp(location, in: courtSize)
                     state.addMarker(at: clamped)
                 })
             }
@@ -113,42 +116,7 @@ struct BasketballCourtView: View {
         }
     }
 
-    // MARK: - Court Drawing
-
-    private func court(in size: CGSize) -> Path {
-        var path = Path()
-        let rect = CGRect(origin: .zero, size: size)
-        path.addRect(rect)
-        return path
-    }
-
-    private func courtLines(in size: CGSize) -> Path {
-        var path = Path()
-        let w = size.width
-        let h = size.height
-
-        // Half court baseline at bottom, midcourt at top
-        path.addRect(CGRect(x: 0, y: 0, width: w, height: h))
-
-        // Center line
-        path.move(to: CGPoint(x: 0, y: h/2))
-        path.addLine(to: CGPoint(x: w, y: h/2))
-
-        // Three-point arc (approximate)
-        let arcCenter = CGPoint(x: w/2, y: h - h*0.2)
-        path.addArc(center: arcCenter, radius: min(w, h) * 0.35, startAngle: .degrees(200), endAngle: .degrees(-20), clockwise: true)
-
-        // Free throw circle
-        let ftCenter = CGPoint(x: w/2, y: h - h*0.35)
-        path.addEllipse(in: CGRect(x: ftCenter.x - 50, y: ftCenter.y - 50, width: 100, height: 100))
-
-        // Key/paint
-        let keyWidth: CGFloat = min(w * 0.4, 180)
-        let keyHeight: CGFloat = h * 0.35
-        path.addRect(CGRect(x: (w - keyWidth)/2, y: h - keyHeight, width: keyWidth, height: keyHeight))
-
-        return path
-    }
+    // MARK: - Court Drawing Delegate (Removed, using PremiumCourtBackground)
 
     @ViewBuilder
     private func markerView(_ marker: CourtMarker) -> some View {
